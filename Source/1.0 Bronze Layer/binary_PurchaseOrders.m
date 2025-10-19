@@ -1,25 +1,19 @@
 /* 
 ===================================================
-Bronze Layer - Import Purchase Order Excel Files
+Bronze Layer - Import Purchase Orders Excel Files
 ===================================================
-
-This script creates a combined table of all purchase order files in one folder.
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++
-
-`FilePath`: Update file path to absolute path of the folder that contains the purchase orders
-
- */
+# Script Definition
+This script creates a combined table of all purchase orders excel files in one folder.
+===================================================
+*/
 
 let
-// file path definition
+// File Path Definition
+    rq_FilePath = #shared[rq_FilePaths],
+    rawCSV_Files = rq_FilePath[rawCSV_Files],
 
-    rqFilePath = "\\Mac\iCloud\Data Analysis\Projects\Inventory-Tracker\Source\0.0 File Paths\rq-FilePaths.m",
-    FilePaths = Expression.Evaluate(Text.FromBinary(File.Contents(rqFilePath)),#shared),
-    Source = Folder.Contents(FilePaths[brz_CSVFiles]),
-
-// query
-
+// Query
+    Source = Folder.Contents(rawCSV_Files),
     #"Filter Files" = Table.SelectRows(Source, each not Text.StartsWith([Name],".")),
     #"Transform Content Binary to Table" = Table.TransformColumns(#"Filter Files",{"Content", each Csv.Document(_)}),
     #"Add Timestamp Column" = Table.AddColumn(#"Transform Content Binary to Table","Date Last Query",each DateTime.LocalNow()),
