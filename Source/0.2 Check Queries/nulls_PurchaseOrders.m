@@ -9,11 +9,11 @@ This script isolates all records in Purchase Orders that contain a null handle
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
+    rq_Objects = #shared[rq_Objects],
 
 // External Queries
-    rqClean_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqClean_PurchaseOrders])),#shared),
-    slvCleaned_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[slvCleaned_PurchaseOrders])),#shared),
+    rqClean_PurchaseOrders = rq_Objects[rqClean_PurchaseOrders],
+    slvCleaned_PurchaseOrders = rq_Objects[slvCleaned_PurchaseOrders],
 
 // Variables
 chkNulls = rqClean_PurchaseOrders[chkNulls],

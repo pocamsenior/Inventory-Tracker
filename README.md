@@ -2,21 +2,21 @@
 
 <!-- Tech Stack -->
 
-<div style="display: flex; align-items: center; gap: 5px;">
-    <div style="display: flex; align-items: center">
-        <span> 
+<div style="display: flex; align-items: center; gap: 0px 5px;">
+    <div style="display: flex; align-items: center; gap: 0px 5px">
+        <span style="display: inline-flex; align-items: center"> 
             <img src="https://go-skill-icons.vercel.app/api/icons?i=excel" /> 
         </span>
-        <span>
+        <span style="display: inline-flex; align-items: center"> 
             <img src="https://img.shields.io/badge/Microsoft_Excel-15492E?style=for-the-badge&logo=microsoft-excel&logoColor=white" /> 
             <img src="https://img.shields.io/badge/Power_Query_|_M_Language-217347?style=for-the-badge&logo=power-query&logoColor=white" /> 
         </span>
     </div>
-    <div style="display: flex; align-items: center">
-        <span>
+    <div style="display: flex; align-items: center; gap: 0px 5px">
+        <span style="display: inline-flex; align-items: center">
             <img src="https://go-skill-icons.vercel.app/api/icons?i=vscode" /> 
         </span>
-        <span>
+        <span style="display: inline-flex; align-items: center">
             <img src="https://img.shields.io/badge/VS_Code-07669D?style=for-the-badge&logo=vscode&logoColor=white" /> 
         </span>
     </div>

@@ -9,10 +9,10 @@ This script expands all of the file contents from the purchase orders and makes 
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
+    rq_Objects = #shared[rq_Objects],
 
 // External Queries
-    brzBinary_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[brzBinary_PurchaseOrders])),#shared),
+    brzBinary_PurchaseOrders = rq_Objects[brzBinary_PurchaseOrders],
 
 // Query
     Source = brzBinary_PurchaseOrders,

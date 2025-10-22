@@ -9,12 +9,12 @@ This script creates the dimVariants table along with each record's Id
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
+    rq_Objects = #shared[rq_Objects],
 
 //External Queries
-    slvCleaned_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[slvCleaned_PurchaseOrders])),#shared),
-    rqCreate_dimTableIds = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqCreate_dimTableIds])),#shared),
-    rqCreate_dimTables = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqCreate_dimTables])),#shared),
+    slvCleaned_PurchaseOrders = rq_Objects[slvCleaned_PurchaseOrders],
+    rqCreate_dimTableIds = rq_Objects[rqCreate_dimTableIds],
+    rqCreate_dimTables = rq_Objects[rqCreate_dimTables],
     lstDimTableNames = rqCreate_dimTables[lstTableNames],
     nlstNullHandles = rqCreate_dimTableIds[nlstNullHandles],
 

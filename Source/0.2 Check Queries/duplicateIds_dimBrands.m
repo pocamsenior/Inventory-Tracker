@@ -9,12 +9,12 @@ This script finds duplicate auto-generated ids in dimBrands table
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
+    rq_Objects = #shared[rq_Objects],
 
 // External Queries
-    slvCleaned_dimBrands = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[slvCleaned_dimBrands])),#shared),
-    rqCreate_dimTables = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqCreate_dimTables])),#shared),
-    rqCreate_dimTableIds = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqCreate_dimTableIds])),#shared),
+    slvCleaned_dimBrands = rq_Objects[slvCleaned_dimBrands],
+    rqCreate_dimTables = rq_Objects[rqCreate_dimTables],
+    rqCreate_dimTableIds = rq_Objects[rqCreate_dimTableIds],
 
 // Variables
     lstDimTableNames = rqCreate_dimTables[lstTableNames],

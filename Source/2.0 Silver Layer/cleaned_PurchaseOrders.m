@@ -11,9 +11,9 @@ This script loads the combined data from the bronze layer and does a preliminary
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
-    rqClean_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqClean_PurchaseOrders])),#shared),
-    brzCombined_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[brzCombined_PurchaseOrders])),#shared),
+    rq_Objects = #shared[rq_Objects],
+    rqClean_PurchaseOrders = rq_Objects[rqClean_PurchaseOrders],
+    brzCombined_PurchaseOrders = rq_Objects[brzCombined_PurchaseOrders],
 
 // Variables
     nlstDataTypes = rqClean_PurchaseOrders[nlstDataTypes],

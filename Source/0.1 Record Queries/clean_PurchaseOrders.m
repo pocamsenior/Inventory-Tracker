@@ -9,10 +9,10 @@ This script contains lists and functions that aid in cleaning Purchase Orders
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
+    rq_Objects = #shared[rq_Objects],
     
 // External Queries
-    brzCombined_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[brzCombined_PurchaseOrders])),#shared),
+    brzCombined_PurchaseOrders = rq_Objects[brzCombined_PurchaseOrders],
 
 // Record Query
     clean_PurchaseOrders = 

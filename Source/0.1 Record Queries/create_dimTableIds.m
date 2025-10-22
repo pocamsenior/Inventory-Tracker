@@ -9,11 +9,11 @@ This script aids in the creation of the auto-generated Ids in the dimension tabl
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
+    rq_Objects = #shared[rq_Objects],
 
 // External Queries
-    rqClean_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqClean_PurchaseOrders])),#shared),
-    rqCreate_dimTables = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqCreate_dimTables])),#shared),
+    rqClean_PurchaseOrders = rq_Objects[rqClean_PurchaseOrders],
+    rqCreate_dimTables = rq_Objects[rqCreate_dimTables],
 
 // Variables
 
@@ -30,8 +30,12 @@ let
     // other lists
     lstVowels = {"a","e","i","o","u"},
     lstSymbols = {"&","'","!"},
-    lstUnits = {"inch","inches","foot","feet"},
+    lstUnits = {"inch","foot","feet","decibel","ounce","count","piece","yard", "wide", "amp","volt"},
+    lstUnitReplacements = {"IN","FT","FT","DB","OZ","CT","PC","YD","W","A","V"},
+    lstSizes = {"small","medium","large","extra"},
+    lstSizeReplacements = {"SM","MED","LG","XTR"},
     nlstWordReplacements = {{"/","F"},{"-"," "}, {" to "," "},{"  "," "}},
+    nlstWordReplacementsSizes = {{"/","F"},{"-","D"},{"\"," T "}},
 
     // null handles
     nlstNullHandles = List.Transform(List.Select(lstDistinctNullHandles, each Value.Type(_) = type text and List.Count(Text.PositionOf(_," ",Occurrence.All)) = 1),each {_,Text.Upper(Text.Combine({Text.Start(_,2),Text.Start(Text.AfterDelimiter(_," "),2)}))}),
@@ -55,6 +59,12 @@ let
         cleanWord = List.Accumulate(nlstWordReplacements, word, (current, replacement) => Text.Remove(Text.Replace(current, replacement{0}, replacement{1}),lstSymbols))
         in
         Text.Proper(cleanWord),
+    
+    cleanSizes = (word) =>
+        let 
+        cleanWord = List.Accumulate(nlstWordReplacementsSizes, word, (current, replacement) => Text.Remove(Text.Replace(current, replacement{0}, replacement{1}),lstSymbols))
+        in
+        Text.Proper(cleanWord),    
 
     // handle missing data
     handleMissingData = (word) => 
@@ -89,22 +99,41 @@ let
         let 
             lstWords = splitPhrase(phrase),
             WordLetterCombinations =  List.Zip(List.Transform(lstLetterCombinations, (LetterCombination) => List.Transform(lstWords, (words) => Text.Contains(words, LetterCombination)))),
-            posList = List.Transform(WordLetterCombinations,each List.PositionOf(_, true)),
-            WordLetterSelect = List.Transform(posList, each if _ = -1 then _ else lstLetterCombinations{_}),
+            lstListPos = List.Transform(WordLetterCombinations,each List.PositionOf(_, true)),
+            WordLetterSelect = List.Transform(lstListPos, each if _ = -1 then _ else lstLetterCombinations{_}),
             WordLetterReplacement = List.Transform(WordLetterSelect, each if _ = -1 then _ else Text.End(_,1)),
-            ReplacementList = List.Zip({WordLetterSelect, WordLetterReplacement})
+            lstReplacements = List.Zip({WordLetterSelect, WordLetterReplacement})
         in    
-            List.Accumulate(ReplacementList, lstWords, (current, replacement) => List.Transform(current, each Text.Replace(_, if replacement{0} = -1 then current{List.PositionOf(current,_)} else replacement{0}, if replacement{1} = -1 then current{List.PositionOf(current,_)} else replacement{1}))),
+            List.Accumulate(lstReplacements, lstWords, (current, replacement) => List.Transform(current, each Text.Replace(_, if replacement{0} = -1 then current{List.PositionOf(current,_)} else replacement{0}, if replacement{1} = -1 then current{List.PositionOf(current,_)} else replacement{1}))),
     
     // change
     chgUnits = (phrase) =>
         let
             lstWords = splitPhrase(phrase),
             lstLowercaseWords = List.Transform(lstWords, each Text.Lower(_)),
-            posList = List.PositionOf(List.Transform(lstUnits, (units) => Text.Contains(phrase, units, Comparer.OrdinalIgnoreCase)),true),
-            posText = List.PositionOf(lstLowercaseWords,lstUnits{posList})
+            lstListPos = List.PositionOf(List.Transform(lstUnits, (units) => Text.Contains(phrase, units, Comparer.OrdinalIgnoreCase)),true),
+            lstTextPos = List.PositionOf(lstLowercaseWords,lstUnits{lstListPos})
         in
-            Text.Replace(phrase, Text.Proper(lstUnits{posList}), Text.Start(lstWords{posText},1)),
+            Text.Replace(phrase, Text.Proper(lstUnits{lstListPos}), Text.Start(lstWords{lstTextPos},1)),
+    
+    chgUnits_dimSizes = (phrase) =>
+        let
+            lstWords = splitPhrase(phrase),
+            lstLowercaseWords = List.Transform(lstWords, each Text.Lower(_)),
+            Units =  List.Zip(List.Transform(lstUnits, (unit) => List.Transform(lstLowercaseWords, (word) => Text.Contains(word, unit)))),
+            lstListPos = List.Transform(Units, each List.PositionOf(_,true)),
+            mxlstUnits_ListPosition = List.Transform(lstLowercaseWords, each List.Transform(lstListPos, (position) => if position = -1 then _ else position){List.PositionOf(lstLowercaseWords,_)})
+        in
+            List.Transform(mxlstUnits_ListPosition, each if Value.Type(_) = type number then lstUnitReplacements{_} else _),
+
+    chgSizes = (phrase as list) =>
+        let
+            Sizes = List.Transform(phrase, each List.Transform(lstSizes, (size) => Text.Contains(_,size, Comparer.OrdinalIgnoreCase))),
+            lstListPos = List.Transform(Sizes, each List.PositionOf(_, true)),
+            mxlstSizes_ListPosition = List.Transform(phrase, each List.Transform(lstListPos, (position) => if position = -1 then _ else position){List.PositionOf(phrase,_)})
+        in 
+            List.Transform(mxlstSizes_ListPosition, each if Value.Type(_) = type number then lstSizeReplacements{_} else _),
+           
 
 // Record Query
     create_dimTableIds = [
@@ -251,6 +280,25 @@ let
             ) else _
         }
 
+    // Size Id
+        else if Text.Contains(_,"Size")
+        then {
+        // Clean Words
+            each cleanSizes(_),
+
+        // Handle Missing Data
+            each handleMissingData(_),
+
+        // Change Units
+            each chgUnits_dimSizes(_),
+
+        // Change Sizes
+            each chgSizes(_),
+
+        // Combine
+            each Text.Upper(Text.Combine(_))
+        }
+        
         else null),
 
     // Check for duplicate in Id Columns

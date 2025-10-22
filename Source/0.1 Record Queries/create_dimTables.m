@@ -9,10 +9,10 @@ This script aids in creating all dimension tables
 
 let
 // File Path Definition
-    rq_FilePath = #shared[rq_FilePaths],
+    rq_Objects = #shared[rq_Objects],
 
 // External Queries
-    rqClean_PurchaseOrders = Expression.Evaluate(Text.FromBinary(File.Contents(rq_FilePath[rqClean_PurchaseOrders])),#shared),
+    rqClean_PurchaseOrders = rq_Objects[rqClean_PurchaseOrders],
     lstColumnNames = rqClean_PurchaseOrders[lstColumnNames],
 
 // Functions
