@@ -18,7 +18,7 @@ let
 
 // Variables
     lstDimTableNames = rqCreate_dimTables[lstTableNames],
-    posTableName = List.PositionOf(lstDimTableNames,"dim_Variants"),
+    posTableName = List.PositionOf(lstDimTableNames,"dimVariants"),
     idColumnName = rqCreate_dimTables[lstIdColumnNames]{posTableName}{0},
     ColumnName = Text.BeforeDelimiter(idColumnName, " "),
 

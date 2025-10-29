@@ -19,7 +19,7 @@ let
     nlstNullHandles = rqCreate_dimTableIds[nlstNullHandles],
 
 // Variables
-    posTableName = List.PositionOf(lstDimTableNames,"dim_Variants"),
+    posTableName = List.PositionOf(lstDimTableNames,"dimVariants"),
     nlstColumnNames = rqCreate_dimTables[nlstColumnNames]{posTableName},
     nlstRenameColumns = rqCreate_dimTables[nlstRenameColumns]{posTableName},
     idColumnName = rqCreate_dimTables[lstIdColumnNames]{posTableName}{0},

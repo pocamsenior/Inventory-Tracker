@@ -23,9 +23,11 @@ let
 // Query
 
     Source = brzCombined_PurchaseOrders,
-    #"Update Data Types" = Table.TransformColumnTypes(Source, nlstDataTypes),
-    #"Transform Blanks to Nulls" = Table.ReplaceValue(#"Update Data Types","",null,Replacer.ReplaceValue,lstColumnNames),
-    #"Handle Missing Data" = Table.TransformColumns(#"Transform Blanks to Nulls", nlstNullHandlesFX)
+    // #"Update Data Types" = Table.TransformColumnTypes(Source, nlstDataTypes),
+    #"Transform Blanks to Nulls" = Table.ReplaceValue(Source,"",null,Replacer.ReplaceValue,lstColumnNames),
+    #"Handle Missing Data" = Table.TransformColumns(#"Transform Blanks to Nulls", nlstNullHandlesFX),
+    #"Update Data Types" = Table.TransformColumnTypes(#"Handle Missing Data", nlstDataTypes)
 
 in
-    #"Handle Missing Data"
+    // #"Handle Missing Data"
+    #"Update Data Types"

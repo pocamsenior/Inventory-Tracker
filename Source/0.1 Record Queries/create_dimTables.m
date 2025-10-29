@@ -3,7 +3,7 @@
 Record Query - Create Dimension Tables
 ===================================================
 # Script Definition
-This script aids in creating all dimension tables
+This script aids in creating all dimension tables in the silver layer
 ===================================================
 */
 
@@ -14,6 +14,13 @@ let
 // External Queries
     rqClean_PurchaseOrders = rq_Objects[rqClean_PurchaseOrders],
     lstColumnNames = rqClean_PurchaseOrders[lstColumnNames],
+    slvCleaned_dimCategories = rq_Objects[slvCleaned_dimCategories],
+    slvCleaned_dimVariants = rq_Objects[slvCleaned_dimVariants],
+    slvCleaned_dimBrands = rq_Objects[slvCleaned_dimBrands],
+    slvCleaned_dimSizes = rq_Objects[slvCleaned_dimSizes],
+
+// Variables
+    lstTableNames = {"dimProducts","dimCategories","dimVariants","dimBrands","dimSizes"},
 
 // Functions
     nlstOriginalItems = (listItem) => List.Transform(listItem, (nListItem) => nListItem),
@@ -25,9 +32,9 @@ let
 
         [
         // dimension table names
-            lstTableNames = {"dim_Products","dim_Categories","dim_Variants","dim_Brands","dim_Sizes"},
+            lstTableNames = lstTableNames,
 
-        // original dimension table column names
+        // original dimension table column names -- future refactor?
             nlstColumnNames = List.Transform(lstTableNames, 
             each 
                 if List.Contains({Text.Contains(_,"Product")},true) then List.Select(lstColumnNames, each Text.Contains(_, "Product")) 
@@ -46,10 +53,6 @@ let
 
         // id column names
             lstIdColumnNames = List.Transform(nlstColumnNames, each createNestedListColumnIdName(_)),
-
-            // // sorting order
-            // nlstSortAscending =  List.Transform((List.Transform(lstTableNames, each List.Transform(nlstRenameColumns{List.PositionOf(lstTableNames,_)},(nListItem) => if Value.Type(nListItem) = type list then List.Combine({List.Select(nListItem, each not Text.Contains(_, "Product")),{Order.Ascending}}) else nListItem))), each if List.PositionOf(nlstRenameColumns,_) >= 1 then List.Combine({List.Select(_, each not Text.Contains(_, "Product")),{Order.Ascending}}) else _),
-
 
         // null handles
             lstNullHandles = List.Select(rqClean_PurchaseOrders[lstDistinctNullHandles], each _ <> -1 and List.Count(Text.PositionOf(_," ",Occurrence.All)) = 1)

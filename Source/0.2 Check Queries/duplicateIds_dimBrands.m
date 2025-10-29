@@ -16,16 +16,27 @@ let
     rqCreate_dimTables = rq_Objects[rqCreate_dimTables],
     rqCreate_dimTableIds = rq_Objects[rqCreate_dimTableIds],
 
+// // Variables
+//     lstDimTableNames = rqCreate_dimTables[lstTableNames],
+//     posTableName = List.PositionOf(lstDimTableNames,"dim_Brands"),
+//     idColumnName = rqCreate_dimTables[lstIdColumnNames]{posTableName}{0},
+//     ColumnName = Text.BeforeDelimiter(idColumnName, " "),
+
+// // Query
+//     Source = slvCleaned_dimBrands,
+//     #"Remove Columns" = Table.RemoveColumns(Source,{"Model", "Model Number"}),
+//     #"Check Duplicates" = rqCreate_dimTableIds[chkDuplicates](#"Remove Columns",{ColumnName,idColumnName},posTableName)
+
 // Variables
     lstDimTableNames = rqCreate_dimTables[lstTableNames],
-    posTableName = List.PositionOf(lstDimTableNames,"dim_Brands"),
+    posTableName = List.PositionOf(lstDimTableNames,"dimBrands"),
     idColumnName = rqCreate_dimTables[lstIdColumnNames]{posTableName}{0},
     ColumnName = Text.BeforeDelimiter(idColumnName, " "),
 
+   
 // Query
     Source = slvCleaned_dimBrands,
-    #"Remove Columns" = Table.RemoveColumns(Source,{"Model", "Model Number"}),
-    #"Check Duplicates" = rqCreate_dimTableIds[chkDuplicates](#"Remove Columns",{ColumnName,idColumnName},posTableName)
+    #"Check Duplicates" = rqCreate_dimTableIds[chkDuplicates](Source, {ColumnName, idColumnName}, posTableName)
 
 in
 
